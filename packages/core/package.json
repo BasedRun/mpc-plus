@@ -1,5 +1,5 @@
 {
-  "name": "core",
+  "name": "@mcp/core",
   "version": "0.0.0",
   "description": "A starter for creating a TypeScript package.",
   "homepage": "https://github.com/author/library#readme",
@@ -30,17 +30,10 @@
     "check": "vp check",
     "prepublishOnly": "vp run build"
   },
-  "dependencies": {
-    "utils": "workspace:*"
-  },
   "devDependencies": {
     "@types/node": "^26.1.1",
     "bumpp": "^11.1.0",
     "typescript": "^7.0.2",
-    "utils": "workspace:*",
-    "vite-plus": "^0.2.4"
-  },
-  "peerDependencies": {
-    "utils": "workspace:*"
+    "vite-plus": "0.3.0"
   }
 }

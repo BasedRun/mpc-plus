@@ -1,6 +1,7 @@
-import { expect, test } from "vite-plus/test";
-import { fn } from "../src/index.ts";
+import { expectTypeOf, test } from "vite-plus/test";
+import type { WechatConfigInput } from "../src/index.ts";
 
-test("fn", () => {
-  expect(fn()).toBe("Hello, tsdown!");
+test("exports the WeChat configuration contract", () => {
+  expectTypeOf<WechatConfigInput>().toHaveProperty("appid");
+  expectTypeOf<WechatConfigInput>().toHaveProperty("privateKey");
 });

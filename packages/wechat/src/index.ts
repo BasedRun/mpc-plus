@@ -1,3 +1,1 @@
-export function fn() {
-  return "Hello, tsdown!";
-}
+export type { WechatConfigInput, WechatPreviewOptions, WechatUploadOptions } from "./config.ts";

@@ -1,3 +1,2 @@
-export function fn() {
-  return "Hello, tsdown!";
-}
+export { defineConfig } from "./config.ts";
+export type { StandardConfigInput, StandardPlatformRegistry } from "./config.ts";

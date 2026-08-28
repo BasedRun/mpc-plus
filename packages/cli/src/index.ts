@@ -1,3 +1,2 @@
-export function fn() {
-  return "Hello, tsdown!";
-}
+export { defineConfig } from "@mcp/standard";
+export type { StandardConfigInput } from "@mcp/standard";
