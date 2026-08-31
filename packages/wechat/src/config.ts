@@ -1,16 +1,6 @@
-export interface WechatUploadOptions {
-  setting?: Record<string, unknown>;
-}
-
-export interface WechatPreviewOptions {
-  scene?: number;
-}
-
-export interface WechatConfigInput {
+export interface WechatConfig{
+  env: string;
   appid: string;
   privateKey: string;
-  output: string;
-  robot?: number;
-  upload?: WechatUploadOptions;
-  preview?: WechatPreviewOptions;
+  projectRoot?: string;
 }
