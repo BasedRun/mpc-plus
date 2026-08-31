@@ -1,5 +1,6 @@
-import { createStandardMPC } from '@mpc-plus/standard'
+import { createStandardMPC, resolvePlatformConfig } from '@mpc-plus/standard'
 import { loadConfig } from './config.ts'
+import type { StandardPlatformsConfig } from "@mpc-plus/standard";
 
 export function _createCliContext() {
     const cwd = process.cwd()
@@ -16,10 +17,21 @@ export function _createCliContext() {
         return config
     }
 
+    async function resolveConfig<K extends keyof StandardPlatformsConfig>(platform: K, env: string) {
+        const config = await getConfig()
+
+        return resolvePlatformConfig(
+            config,
+            platform,
+            env
+        )
+    }
+
     return {
         cwd,
         mpc,
-        getConfig
+        getConfig,
+        resolveConfig,
     }
 }
 

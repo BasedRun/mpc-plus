@@ -7,7 +7,21 @@ export const uploadCommand = defineCommand({
         description: 'Upload mini program',
     },
 
-    async run() {
+    args: {
+        platform: {
+            type: 'string',
+            required: false,
+            description: ''
+        },
+
+        env: {
+            type: 'string',
+            required: true,
+            description: 'env'
+        }
+    },
+
+    async run({args}) {
         const { mpc, getConfig } = useCliContext()
         console.log(mpc.getPlatform('wechat'))
 
