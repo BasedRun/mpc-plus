@@ -1,6 +1,5 @@
 import { defineCommand } from 'citty'
-
-import { loadConfig } from '../config.ts'
+import {useCliContext} from "../context.ts";
 
 export const uploadCommand = defineCommand({
     meta: {
@@ -9,8 +8,10 @@ export const uploadCommand = defineCommand({
     },
 
     async run() {
-        const config = await loadConfig()
+        const { mpc, getConfig } = useCliContext()
+        console.log(mpc.getPlatform('wechat'))
 
+        const config = await getConfig()
         console.log(config)
     },
 })
