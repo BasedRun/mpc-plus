@@ -1,5 +1,5 @@
 {
-  "name": "@mcp/cli",
+  "name": "@mpc-plus/cli",
   "version": "0.0.0",
   "description": "A starter for creating a TypeScript package.",
   "homepage": "https://github.com/author/library#readme",
@@ -31,7 +31,9 @@
     "prepublishOnly": "vp run build"
   },
   "dependencies": {
-    "@mcp/standard": "*"
+    "@mpc-plus/standard": "*",
+    "citty": "^0.2.2",
+    "jiti": "^2.7.0"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",

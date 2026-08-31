@@ -1,2 +1,2 @@
-export { defineConfig } from "@mcp/standard";
-export type { StandardConfigInput } from "@mcp/standard";
+export { defineConfig } from "@mpc-plus/standard";
+export type { StandardConfigInput } from "@mpc-plus/standard";
