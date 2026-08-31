@@ -1,1 +1,4 @@
-export type { WechatConfigInput, WechatPreviewOptions, WechatUploadOptions } from "./config.ts";
+export type { WechatConfig } from "./config.ts";
+
+export {wechatPlatform} from "./platform.ts";
+

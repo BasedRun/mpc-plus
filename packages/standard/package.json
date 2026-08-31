@@ -31,9 +31,9 @@
     "prepublishOnly": "vp run build"
   },
   "dependencies": {
-    "@mcp/core": "*",
-    "@mcp/douyin": "*",
-    "@mcp/wechat": "*"
+    "@mpc-plus/core": "*",
+    "@mpc-plus/douyin": "*",
+    "@mpc-plus/wechat": "*"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
