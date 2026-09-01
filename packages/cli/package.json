@@ -16,6 +16,9 @@
     "dist"
   ],
   "type": "module",
+  "bin": {
+    "mpc": "./dist/bin.mjs"
+  },
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"

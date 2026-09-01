@@ -1,17 +1,19 @@
 import { expect, expectTypeOf, test } from "vite-plus/test";
-import { defineConfig, type StandardConfigInput } from "../src/index.ts";
+import { defineConfig, type MPCConfig } from "../src/index.ts";
 
 test("defineConfig preserves the standard configuration", () => {
   const config = defineConfig({
     platforms: {
-      wechat: {
-        appid: "appid",
-        privateKey: "private-key",
-        output: "dist/mp-weixin",
-      },
+      wechat: [
+        {
+          env: "production",
+          appid: "appid",
+          privateKey: "private-key",
+        },
+      ],
     },
   });
 
   expect(defineConfig(config)).toBe(config);
-  expectTypeOf(config).toMatchTypeOf<StandardConfigInput>();
+  expectTypeOf(config).toMatchTypeOf<MPCConfig>();
 });

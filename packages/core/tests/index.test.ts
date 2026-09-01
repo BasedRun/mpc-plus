@@ -1,12 +1,14 @@
 import { expectTypeOf, test } from "vite-plus/test";
-import type { MpcConfigInput, PlatformDefinition } from "../src/index.ts";
+import type { BaseMpcConfig, Platform } from "../src/index.ts";
 
-test("infers platform config inputs from a registry", () => {
-  type Registry = {
-    example: PlatformDefinition<"example", { appid: string }>;
+test("connects platform configuration and upload option types", () => {
+  type ExampleConfig = { appid: string };
+  type PlatformsConfig = {
+    example?: ExampleConfig;
   };
 
-  expectTypeOf<MpcConfigInput<Registry>["platforms"]>().toEqualTypeOf<{
-    example?: { appid: string };
-  }>();
+  expectTypeOf<
+    NonNullable<BaseMpcConfig<PlatformsConfig>["platforms"]>
+  >().toEqualTypeOf<PlatformsConfig>();
+  expectTypeOf<Parameters<Platform<ExampleConfig>["upload"]>[0]>().toEqualTypeOf<ExampleConfig>();
 });

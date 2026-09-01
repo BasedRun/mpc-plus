@@ -4,6 +4,7 @@ const ConfigRe = /^mpc\.config\.(ts|js|mjs|cjs)$/
 
 import {resolve} from "node:path";
 import {createJiti} from "jiti";
+import type {MPCConfig} from '@mpc-plus/standard'
 
 export async function loadConfig(cwd = process.cwd()) {
     const files = await readdir(cwd)
@@ -13,9 +14,9 @@ export async function loadConfig(cwd = process.cwd()) {
         throw new Error('Cannot find mpc config file')
     }
 
-    const configPath = resolve(cwd)
+    const configPath = resolve(cwd, configFile)
 
     const jiti = createJiti(import.meta.url)
     const module = await jiti.import(configPath)
-    return (module as any)?.default
+    return (module as {default: MPCConfig}).default
 }

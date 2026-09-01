@@ -2,4 +2,4 @@
 
 import {RunMPC} from "./run.ts";
 
-RunMPC()
+void RunMPC()
