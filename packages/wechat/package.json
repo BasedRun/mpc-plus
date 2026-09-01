@@ -36,5 +36,8 @@
     "bumpp": "^11.1.0",
     "typescript": "^7.0.2",
     "vite-plus": "0.3.0"
+  },
+  "dependencies": {
+    "miniprogram-ci": "^2.1.31"
   }
 }
