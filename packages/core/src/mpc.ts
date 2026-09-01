@@ -21,7 +21,7 @@ export function createMPC() {
         return platform
     }
 
-    function upload(name: string, options: unknown) {
+    function upload<T>(name: string, options: T) {
         const platform = getPlatform(name)
 
         return platform.upload(options)

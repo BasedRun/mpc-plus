@@ -1,5 +1,6 @@
 import { defineCommand } from 'citty'
 import {useCliContext} from "../context.ts";
+import type {StandardPlatformsConfig} from "@mpc-plus/standard";
 
 export const uploadCommand = defineCommand({
     meta: {
@@ -22,10 +23,24 @@ export const uploadCommand = defineCommand({
     },
 
     async run({args}) {
-        const { mpc, getConfig } = useCliContext()
-        console.log(mpc.getPlatform('wechat'))
+        const { mpc, getConfig, resolveConfig } = useCliContext()
 
         const config = await getConfig()
-        console.log(config)
+
+        const platforms = args.platform ? [args.platform ] : Object.keys(config.platforms ?? {})
+
+        for (const platform of platforms) {
+            const name = platform as keyof StandardPlatformsConfig
+
+            const resolvedConfig = await resolveConfig(
+                name,
+                args.env,
+            )
+
+            await mpc.upload(
+                name,
+                resolvedConfig,
+            )
+        }
     },
 })
