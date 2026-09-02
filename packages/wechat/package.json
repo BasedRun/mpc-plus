@@ -1,16 +1,16 @@
 {
   "name": "@mpc-plus/wechat",
   "version": "0.0.0",
-  "description": "A starter for creating a TypeScript package.",
-  "homepage": "https://github.com/author/library#readme",
+  "description": "WeChat Mini Program upload support for MPC Plus.",
+  "homepage": "https://github.com/pkc918/mpc-plus#readme",
   "bugs": {
-    "url": "https://github.com/author/library/issues"
+    "url": "https://github.com/pkc918/mpc-plus/issues"
   },
   "license": "MIT",
-  "author": "Author Name <author.name@mail.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/author/library.git"
+    "url": "git+https://github.com/pkc918/mpc-plus.git",
+    "directory": "packages/wechat"
   },
   "files": [
     "dist"
@@ -30,15 +30,15 @@
     "check": "vp check",
     "prepublishOnly": "vp run build"
   },
+  "dependencies": {
+    "consola": "^3.4.2",
+    "miniprogram-ci": "^2.1.31"
+  },
   "devDependencies": {
     "@mpc-plus/core": "*",
     "@types/node": "^26.1.1",
     "bumpp": "^11.1.0",
     "typescript": "^7.0.2",
     "vite-plus": "0.3.0"
-  },
-  "dependencies": {
-    "consola": "^3.4.2",
-    "miniprogram-ci": "^2.1.31"
   }
 }

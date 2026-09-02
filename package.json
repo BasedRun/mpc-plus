@@ -2,13 +2,18 @@
   "name": "mpc-plus",
   "version": "0.0.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pkc918/mpc-plus.git"
+  },
   "workspaces": [
     "packages/*"
   ],
   "type": "module",
   "scripts": {
     "ready": "vp check && vp run -r test && vp run -r build",
-    "dev": "vp run website#dev"
+    "dev": "vp run website#dev",
+    "publish:packages": "node ./scripts/publish.ts"
   },
   "devDependencies": {
     "vite-plus": "0.3.0"

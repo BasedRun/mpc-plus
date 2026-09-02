@@ -2,7 +2,16 @@
   "name": "@mpc-plus/douyin",
   "version": "0.0.0",
   "description": "Douyin platform support for MPC Plus.",
+  "homepage": "https://github.com/pkc918/mpc-plus#readme",
+  "bugs": {
+    "url": "https://github.com/pkc918/mpc-plus/issues"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pkc918/mpc-plus.git",
+    "directory": "packages/douyin"
+  },
   "files": [
     "dist"
   ],
