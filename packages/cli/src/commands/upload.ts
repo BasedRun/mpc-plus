@@ -1,12 +1,35 @@
 import { defineCommand } from "citty";
 import { consola } from "consola";
 import { useCliContext } from "../context.ts";
-import type { StandardPlatformsConfig } from "@mpc-plus/standard";
+import type { MPCConfig, StandardPlatformsConfig } from "@mpc-plus/standard";
 
 const logger = consola.withTag("mpc");
 
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
+}
+
+export interface UploadTarget {
+  platform: keyof StandardPlatformsConfig;
+  env: string;
+}
+
+export function resolveUploadTargets(
+  config: MPCConfig,
+  requestedPlatform?: string,
+  requestedEnv?: string,
+): UploadTarget[] {
+  const platforms = requestedPlatform ? [requestedPlatform] : Object.keys(config.platforms ?? {});
+
+  return platforms.flatMap((platform) => {
+    const name = platform as keyof StandardPlatformsConfig;
+    const platformConfigs = config.platforms?.[name] ?? [];
+    const environments = platformConfigs
+      .map((platformConfig) => platformConfig.env)
+      .filter((env) => !requestedEnv || env === requestedEnv);
+
+    return [...new Set(environments)].map((env) => ({ platform: name, env }));
+  });
 }
 
 export const uploadCommand = defineCommand({
@@ -19,54 +42,72 @@ export const uploadCommand = defineCommand({
     platform: {
       type: "string",
       required: false,
-      description: "",
+      description: "Platform filter; uploads all configured platforms when omitted",
     },
 
     env: {
       type: "string",
-      required: true,
-      description: "env",
+      required: false,
+      description: "Environment filter; uploads all configured environments when omitted",
     },
   },
 
   async run({ args }) {
     const requestedPlatform = args.platform ?? "all";
+    const requestedEnv = args.env ?? "all";
 
     try {
-      logger.success(`参数解析: env=${args.env}, platform=${requestedPlatform}`);
+      logger.success(`参数解析: env=${requestedEnv}, platform=${requestedPlatform}`);
 
       const { mpc, getConfig, resolveConfig } = useCliContext();
 
       const config = await getConfig();
+      const targets = resolveUploadTargets(config, args.platform, args.env);
 
-      const platforms = args.platform ? [args.platform] : Object.keys(config.platforms ?? {});
-
-      if (platforms.length === 0) {
-        logger.error("平台分发: 没有配置可上传的平台");
-        throw new Error("No upload platforms are configured.");
+      if (targets.length === 0) {
+        logger.error("平台分发: 配置中没有匹配的上传目标");
+        throw new Error("No matching upload targets are configured.");
       }
 
-      for (const platform of platforms) {
-        const name = platform as keyof StandardPlatformsConfig;
+      let hasFailures = false;
 
-        const resolvedConfig = await resolveConfig(name, args.env).then(
+      for (const target of targets) {
+        const { platform, env } = target;
+
+        const resolvedConfig = await resolveConfig(platform, env).then(
           (value) => {
-            logger.success(`环境解析: platform=${name}, env=${args.env}`);
+            logger.success(`环境解析: platform=${platform}, env=${env}`);
             return value;
           },
           (error: unknown) => {
             logger.error(
-              `环境解析: platform=${name}, env=${args.env}, reason=${getErrorMessage(error)}`,
+              `环境解析: platform=${platform}, env=${env}, reason=${getErrorMessage(error)}`,
             );
-            throw error;
+            hasFailures = true;
+            return undefined;
           },
         );
 
-        logger.success(`平台分发: platform=${name}`);
+        if (!resolvedConfig) {
+          continue;
+        }
+
+        logger.success(`平台分发: platform=${platform}, env=${env}`);
 
         const platformStartedAt = Date.now();
-        await mpc.upload(name, resolvedConfig);
-        logger.success(`上传结果: platform=${name}, duration=${Date.now() - platformStartedAt}ms`);
+
+        try {
+          await mpc.upload(platform, resolvedConfig);
+          logger.success(
+            `上传结果: platform=${platform}, env=${env}, duration=${Date.now() - platformStartedAt}ms`,
+          );
+        } catch {
+          hasFailures = true;
+        }
+      }
+
+      if (hasFailures) {
+        process.exitCode = 1;
       }
     } catch {
       process.exitCode = 1;
