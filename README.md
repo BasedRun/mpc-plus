@@ -1,6 +1,6 @@
-# Vite+ Monorepo Starter
+# MPC Plus
 
-A starter for creating a Vite+ monorepo.
+A unified CLI for uploading mini programs across platforms and environments.
 
 ## Development
 
@@ -26,6 +26,22 @@ vp run -r build
 
 ```bash
 vp run dev
+```
+
+This starts the documentation site. The same task can be run explicitly with:
+
+```bash
+vp run docs:dev
+```
+
+## Documentation
+
+The Fumadocs site lives in the `docs` workspace and shares the root Vite+ installation.
+
+```bash
+vp install
+vp run docs:check
+vp run docs:build
 ```
 
 ## Publishing

@@ -1,0 +1,55 @@
+---
+title: 上传命令
+description: 使用 platform 和 env 参数选择需要上传的目标。
+icon: Upload
+---
+
+## 上传全部配置
+
+```bash
+pnpm exec mpc upload
+```
+
+当 `platform` 和 `env` 都省略时，CLI 会依次执行配置中的全部平台和全部环境。
+
+## 筛选平台
+
+```bash
+pnpm exec mpc upload --platform wechat
+```
+
+当前已实现的平台是 `wechat`。
+
+## 筛选环境
+
+```bash
+pnpm exec mpc upload --env prod
+```
+
+这会在所有已配置平台中查找 `env: 'prod'` 的目标。
+
+## 同时筛选
+
+```bash
+pnpm exec mpc upload --platform wechat --env prod
+```
+
+如果没有匹配项，CLI 会输出“配置中没有匹配的上传目标”并以非零状态退出。
+
+## 执行日志
+
+CLI 会在执行过程中实时打印结果，而不是等流程结束后一次性输出：
+
+```text
+[mpc] ✔ 参数解析: env=prod, platform=wechat
+[mpc] ✔ 配置发现: file=/path/to/mpc.config.ts
+[mpc] ✔ 配置加载: file=mpc.config.ts
+[mpc] ✔ 环境解析: platform=wechat, env=prod
+[mpc] ✔ 平台分发: platform=wechat, env=prod
+[mpc:wechat] ✔ 配置校验: projectPath=..., version=1.0.0, appid=已配置, privateKey=已配置
+[mpc:wechat] ✔ 项目初始化: projectPath=...
+[mpc:wechat] ℹ 上传执行: platform=wechat, version=1.0.0
+[mpc] ✔ 上传结果: platform=wechat, env=prod, duration=1234ms
+```
+
+某个目标失败时，CLI 会继续处理其他目标，并在最后设置非零退出码，方便 CI 判断任务失败。

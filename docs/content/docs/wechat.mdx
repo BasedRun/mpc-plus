@@ -1,0 +1,81 @@
+---
+title: 微信平台
+description: 配置微信小程序上传所需的项目、凭据和上传选项。
+icon: Smartphone
+---
+
+微信上传基于 `miniprogram-ci`。执行前需要准备以下内容：
+
+- 已完成构建的小程序目录。
+- 小程序 `appid`。
+- 对应小程序的上传私钥文件。
+- 可用的版本号。
+
+## 最小配置
+
+```ts title="mpc.config.ts"
+import { defineConfig } from "@mpc-plus/cli";
+
+export default defineConfig({
+  project: {
+    root: "./dist/build/mp-weixin",
+  },
+  release: {
+    version: "1.0.0",
+    description: "Release v1.0.0",
+  },
+  platforms: {
+    wechat: [
+      {
+        env: "prod",
+        appid: process.env.WECHAT_APPID ?? "",
+        privateKey: process.env.WECHAT_PRIVATE_KEY ?? "",
+      },
+    ],
+  },
+});
+```
+
+运行：
+
+```bash
+WECHAT_APPID=wx123 \
+WECHAT_PRIVATE_KEY=/secure/private.wx.key \
+pnpm exec mpc upload --platform wechat --env prod
+```
+
+## 上传选项
+
+通过 `upload` 透传微信 CI 上传参数：
+
+```ts
+{
+  env: 'prod',
+  appid: process.env.WECHAT_APPID ?? '',
+  privateKey: process.env.WECHAT_PRIVATE_KEY ?? '',
+  upload: {
+    robot: 1,
+    threads: 4,
+    setting: {
+      es6: true,
+      minify: true,
+    },
+    onProgressUpdate(event) {
+      console.log(event);
+    },
+  },
+}
+```
+
+支持的字段包括 `robot`、`threads`、`setting` 和 `onProgressUpdate`。
+
+## 上传前校验
+
+以下字段缺失时不会开始上传：
+
+- `project.root`
+- `release.version`
+- `appid`
+- `privateKey`
+
+CLI 会在终端列出缺失字段，并以非零状态退出。

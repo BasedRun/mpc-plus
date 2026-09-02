@@ -1,0 +1,14 @@
+{
+  "title": "MPC Plus CLI",
+  "pages": [
+    "---开始使用---",
+    "index",
+    "installation",
+    "configuration",
+    "---发布---",
+    "upload",
+    "wechat",
+    "---支持---",
+    "troubleshooting"
+  ]
+}

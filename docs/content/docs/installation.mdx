@@ -1,0 +1,45 @@
+---
+title: 安装
+description: 安装 MPC Plus CLI，并确认命令可以运行。
+icon: Package
+---
+
+## 安装 CLI
+
+### 项目内安装
+
+推荐把 CLI 作为开发依赖安装，团队成员和 CI 会使用相同版本：
+
+```bash
+pnpm add -D @mpc-plus/cli
+```
+
+验证安装结果：
+
+```bash
+pnpm exec mpc --help
+```
+
+### 全局安装
+
+如果希望在任意目录直接执行 `mpc`：
+
+```bash
+pnpm add -g @mpc-plus/cli
+mpc --help
+```
+
+项目内安装更容易锁定版本，因此更适合自动化发布。
+
+## 准备项目
+
+CLI 不负责构建小程序。在上传前，请先使用你的框架生成微信小程序构建产物，例如：
+
+```text
+dist/build/mp-weixin/
+├── app.json
+├── project.config.json
+└── ...
+```
+
+随后在项目根目录创建配置文件。下一步请阅读[配置文件](/docs/configuration)。

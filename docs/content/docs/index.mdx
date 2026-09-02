@@ -1,0 +1,67 @@
+---
+title: MPC Plus CLI
+description: 用一份配置管理多平台、多环境的小程序上传流程。
+icon: Rocket
+---
+
+MPC Plus 是一个面向小程序 CI 的命令行工具。它从当前目录读取配置，解析需要执行的平台和环境，并调用对应平台的上传能力。
+
+## 快速体验
+
+### 安装 CLI
+
+```bash
+pnpm add -D @mpc-plus/cli
+```
+
+### 创建配置
+
+在项目根目录创建 `mpc.config.ts`：
+
+```ts title="mpc.config.ts"
+import { defineConfig } from "@mpc-plus/cli";
+
+export default defineConfig({
+  project: {
+    root: "./dist/build/mp-weixin",
+  },
+  release: {
+    version: "1.0.0",
+    description: "Release v1.0.0",
+  },
+  platforms: {
+    wechat: [
+      {
+        env: "dev",
+        appid: process.env.WECHAT_APPID ?? "",
+        privateKey: process.env.WECHAT_PRIVATE_KEY ?? "",
+      },
+    ],
+  },
+});
+```
+
+### 执行上传
+
+```bash
+pnpm exec mpc upload
+```
+
+不指定参数时，CLI 会执行配置文件中的全部平台和环境。
+
+## 工作流程
+
+1. 在当前工作目录发现 `mpc.config.ts`、`.js`、`.mjs` 或 `.cjs`。
+2. 加载配置并解析命令参数。
+3. 按平台与环境生成上传目标。
+4. 合并全局配置和环境配置。
+5. 依次上传，并实时打印每个环节的结果。
+
+## 继续阅读
+
+<Cards>
+  <Card title="安装" description="安装 CLI 并验证命令可用。" href="/docs/installation" />
+  <Card title="配置文件" description="声明项目、版本、平台和环境。" href="/docs/configuration" />
+  <Card title="上传命令" description="筛选平台与环境，理解执行结果。" href="/docs/upload" />
+  <Card title="微信平台" description="准备 appid、私钥和构建目录。" href="/docs/wechat" />
+</Cards>

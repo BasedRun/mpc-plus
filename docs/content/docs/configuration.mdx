@@ -1,0 +1,84 @@
+---
+title: 配置文件
+description: 配置项目路径、发布信息，以及每个平台的环境凭据。
+icon: Settings
+---
+
+CLI 会在当前工作目录查找以下文件之一：
+
+```text
+mpc.config.ts
+mpc.config.js
+mpc.config.mjs
+mpc.config.cjs
+```
+
+推荐使用 TypeScript：
+
+```ts title="mpc.config.ts"
+import { defineConfig } from "@mpc-plus/cli";
+
+export default defineConfig({
+  project: {
+    root: "./dist/build/mp-weixin",
+  },
+  release: {
+    version: "1.0.0",
+    description: "Release v1.0.0",
+  },
+  platforms: {
+    wechat: [
+      {
+        env: "dev",
+        appid: process.env.WECHAT_DEV_APPID ?? "",
+        privateKey: process.env.WECHAT_DEV_PRIVATE_KEY ?? "",
+      },
+      {
+        env: "prod",
+        appid: process.env.WECHAT_PROD_APPID ?? "",
+        privateKey: process.env.WECHAT_PROD_PRIVATE_KEY ?? "",
+        release: {
+          description: "Production release",
+        },
+      },
+    ],
+  },
+});
+```
+
+## 全局配置
+
+| 字段                  | 类型     | 说明                             |
+| --------------------- | -------- | -------------------------------- |
+| `project.root`        | `string` | 小程序构建产物目录，上传时必填。 |
+| `release.version`     | `string` | 上传版本号，上传时必填。         |
+| `release.description` | `string` | 版本说明，可选。                 |
+| `platforms`           | `object` | 平台配置集合。                   |
+
+## 环境配置
+
+每个平台使用数组声明多个环境。`env` 是 CLI 筛选目标的标识：
+
+```ts
+wechat: [
+  { env: "dev", appid: "...", privateKey: "..." },
+  { env: "prod", appid: "...", privateKey: "..." },
+];
+```
+
+环境中的 `project` 和 `release` 会覆盖同名全局字段，适合为不同环境指定构建目录或发布说明：
+
+```ts
+{
+  env: 'prod',
+  project: { root: './dist/prod/mp-weixin' },
+  release: { description: 'Production release' },
+  appid: process.env.WECHAT_PROD_APPID ?? '',
+  privateKey: process.env.WECHAT_PROD_PRIVATE_KEY ?? '',
+}
+```
+
+<Callout type="warn" title="不要提交密钥">
+  `appid` 和 `privateKey` 建议从环境变量读取。`privateKey`
+  是微信上传私钥文件路径，不应把私钥内容写入仓库。
+</Callout>

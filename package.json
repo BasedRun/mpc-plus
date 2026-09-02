@@ -7,12 +7,16 @@
     "url": "git+https://github.com/pkc918/mpc-plus.git"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "docs"
   ],
   "type": "module",
   "scripts": {
     "ready": "vp check && vp run -r test && vp run -r build",
-    "dev": "vp run website#dev",
+    "dev": "vp run docs#dev",
+    "docs:dev": "vp run docs#dev",
+    "docs:check": "vp run docs#types:check && vp run docs#lint",
+    "docs:build": "vp run docs#build",
     "publish:packages": "node ./scripts/publish.ts"
   },
   "devDependencies": {

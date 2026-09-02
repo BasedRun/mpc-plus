@@ -1,0 +1,57 @@
+---
+title: 故障排查
+description: 根据 CLI 输出快速定位配置发现、环境解析和上传失败。
+icon: Wrench
+---
+
+## 未找到配置文件
+
+```text
+[mpc] ERROR 配置发现: 未找到 mpc.config 配置文件
+```
+
+确认命令从配置文件所在目录执行，并且文件名符合 `mpc.config.ts|js|mjs|cjs`。
+
+## 配置加载失败
+
+```text
+[mpc] ERROR 配置加载: ...
+```
+
+检查配置文件语法、导入路径和环境变量读取逻辑。配置必须通过 `default export` 导出。
+
+## 没有匹配目标
+
+```text
+[mpc] ERROR 平台分发: 配置中没有匹配的上传目标
+```
+
+确认 `--platform` 与配置对象的键一致，并确认 `--env` 与平台数组中的 `env` 一致。
+
+## 缺少微信配置
+
+```text
+[mpc:wechat] ERROR 配置校验: 缺少必填配置 appid, privateKey
+```
+
+确认 CI 或当前终端已经设置环境变量：
+
+```bash
+test -n "$WECHAT_APPID" && echo 'appid configured'
+test -f "$WECHAT_PRIVATE_KEY" && echo 'private key found'
+```
+
+## 项目初始化失败
+
+确认 `project.root` 指向真实的微信小程序构建目录，并检查目录中是否包含 `project.config.json`。
+
+相对路径以执行 `mpc` 时的当前目录为基准，因此建议始终从项目根目录运行命令。
+
+## CI 中上传失败
+
+检查以下项目：
+
+1. 构建步骤已经生成 `project.root` 指向的目录。
+2. `appid` 与上传私钥属于同一个小程序。
+3. 私钥已安全写入 CI 文件系统，配置中填写的是文件路径。
+4. 根据最后一条 `[mpc:wechat]` 错误信息继续定位微信上传错误。
