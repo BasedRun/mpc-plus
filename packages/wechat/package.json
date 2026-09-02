@@ -38,6 +38,7 @@
     "vite-plus": "0.3.0"
   },
   "dependencies": {
+    "consola": "^3.4.2",
     "miniprogram-ci": "^2.1.31"
   }
 }

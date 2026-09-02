@@ -36,6 +36,7 @@
   "dependencies": {
     "@mpc-plus/standard": "*",
     "citty": "^0.2.2",
+    "consola": "^3.4.2",
     "jiti": "^2.7.0"
   },
   "devDependencies": {
