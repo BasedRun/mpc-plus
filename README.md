@@ -1,66 +1,67 @@
 # MPC Plus
 
-A unified CLI for uploading mini programs across platforms and environments.
+**简体中文** | [English](./README.en.md)
 
-## Development
+面向多平台、多环境的小程序上传 CLI，通过统一配置管理构建产物、版本信息和平台凭据。
 
-- Check everything is ready:
+目前已实现微信小程序上传；抖音平台暂提供配置类型，尚未接入上传流程。
 
-```bash
-vp run ready
-```
+## 功能
 
-- Run the tests:
+- **统一配置**：使用 `mpc.config.ts` 集中管理项目、版本和各平台环境。
+- **多环境上传**：通过 `--platform` 和 `--env` 筛选目标，支持一次上传多个配置环境。
+- **环境变量**：根据 `--env` 加载对应的 `.env` 文件，配置中可直接读取 `process.env`。
+- **执行反馈**：实时输出上传日志；单个目标失败后继续处理其余目标，并以非零退出码反馈失败。
 
-```bash
-vp run -r test
-```
+## 快速开始
 
-- Build the monorepo:
+### 1. 安装
 
-```bash
-vp run -r build
-```
-
-- Run the development server:
+在小程序项目中安装 CLI：
 
 ```bash
-vp run dev
+npm install -D @mpc-plus/cli
+npm exec -- mpc --help
 ```
 
-This starts the documentation site. The same task can be run explicitly with:
+### 2. 配置项目
+
+先使用项目原有的构建命令生成小程序产物，再在项目根目录创建 `mpc.config.ts`：
+
+```ts
+import { defineConfig } from "@mpc-plus/cli";
+
+export default defineConfig({
+  project: {
+    root: "./dist/build/mp-weixin",
+  },
+  release: {
+    version: "1.0.0",
+    description: "Release v1.0.0",
+  },
+  platforms: {
+    wechat: [
+      {
+        env: "prod",
+        appid: process.env.WX_APPID ?? "",
+        privateKeyPath: process.env.WECHAT_PRIVATE_KEY_PATH ?? "",
+      },
+    ],
+  },
+});
+```
+
+将 `project.root` 改为实际构建产物目录，并在 `.env.prod` 中填写对应的小程序 AppID 和上传私钥路径：
+
+```dotenv
+WX_APPID=wx123
+WECHAT_PRIVATE_KEY_PATH=/secure/private.wx.key
+```
+
+### 3. 上传
 
 ```bash
-vp run docs:dev
+npm exec -- mpc upload --platform wechat --env prod
 ```
 
-## Documentation
-
-The Fumadocs site lives in the `docs` workspace and shares the root Vite+ installation.
-
-```bash
-vp install
-vp run docs:check
-vp run docs:build
-```
-
-## Publishing
-
-All public packages use one version. Update the versions in `packages/core`, `packages/douyin`,
-`packages/wechat`, `packages/standard`, and `packages/cli`, commit the change, and push a matching
-`v<version>` tag. For example, version `0.1.0` must be released from tag `v0.1.0`.
-
-The tag starts `.github/workflows/publish.yml`, which builds, tests, and publishes the packages to
-npm in dependency order. Configure an npm granular access token as the `NPM_TOKEN` repository secret
-before the first release.
-
-After npm publishing succeeds, the workflow creates a GitHub Release for the same tag with
-automatically generated release notes. Prerelease versions such as `v0.0.1-alpha.1` are marked as
-pre-releases and are not marked as latest. Existing releases are left unchanged when the release
-job is rerun. Release creation uses the built-in `GITHUB_TOKEN`; no additional secret is required.
-
-Inspect the packages without uploading them:
-
-```bash
-npm run publish:packages -- --dry-run
-```
+省略 `--platform` 和 `--env` 时，会依次上传配置中的全部平台和环境。需要加载 `.env.prod` 等环境专用文件时，应明确传入 `--env`。
