@@ -1,12 +1,62 @@
 import { expect, expectTypeOf, test, vi } from "vite-plus/test";
 import { douyinPlatform } from "@mpc-plus/douyin";
 import { alipayPlatform } from "@mpc-plus/alipay";
+import { xhsPlatform } from "@mpc-plus/xhs";
 import {
   createStandardMPC,
   defineConfig,
   resolvePlatformConfig,
   type MPCConfig,
 } from "../src/index.ts";
+
+test("resolves XHS environment overrides and dispatches to its registered uploader", async () => {
+  const config = defineConfig({
+    project: { root: "/dist/shared" },
+    release: { version: "release-2026.09", description: "Shared release" },
+    platforms: {
+      xhs: [
+        { env: "dev", appid: "xhs-dev", token: "dev-token" },
+        {
+          env: "prod",
+          appid: "xhs-prod",
+          token: "prod-token",
+          project: { root: "/dist/xhs" },
+          release: { description: "Production release" },
+        },
+      ],
+    },
+  });
+  const original = structuredClone(config);
+  expect(resolvePlatformConfig(config, "xhs", "dev")).toEqual({
+    env: "dev",
+    appid: "xhs-dev",
+    token: "dev-token",
+    project: { root: "/dist/shared" },
+    release: { version: "release-2026.09", description: "Shared release" },
+  });
+  const resolved = resolvePlatformConfig(config, "xhs", "prod");
+  expect(resolved).toEqual({
+    env: "prod",
+    appid: "xhs-prod",
+    token: "prod-token",
+    project: { root: "/dist/xhs" },
+    release: { version: "release-2026.09", description: "Production release" },
+  });
+  expect(config).toEqual(original);
+  const mpc = createStandardMPC();
+  const upload = vi.spyOn(xhsPlatform, "upload").mockResolvedValue(null);
+  try {
+    expect(mpc.hasPlatform("xhs")).toBe(true);
+    expect(await mpc.upload("xhs", resolved)).toBeNull();
+    expect(upload).toHaveBeenCalledExactlyOnceWith(resolved);
+  } finally {
+    upload.mockRestore();
+  }
+  expect(() => resolvePlatformConfig({}, "xhs", "prod")).toThrow("Platform xhs is not configured.");
+  expect(() => resolvePlatformConfig(config, "xhs", "missing")).toThrow(
+    "Environment missing is not configured for xhs",
+  );
+});
 
 test("resolves Alipay environment overrides and dispatches uploads without a version", async () => {
   const config = defineConfig({

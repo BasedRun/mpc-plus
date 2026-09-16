@@ -18,6 +18,29 @@ test("makes the environment argument optional", () => {
   });
 });
 
+test("includes XHS in all-target uploads and filters its environments", () => {
+  const config = defineConfig({
+    platforms: {
+      alipay: [{ env: "prod", appid: "ali-prod", identityKeyPath: "/keys/alipay" }],
+      xhs: [
+        { env: "dev", appid: "xhs-dev", token: "dev-token" },
+        { env: "prod", appid: "xhs-prod", token: "prod-token" },
+      ],
+    },
+  });
+  expect(resolveUploadTargets(config)).toEqual([
+    { platform: "alipay", env: "prod" },
+    { platform: "xhs", env: "dev" },
+    { platform: "xhs", env: "prod" },
+  ]);
+  expect(resolveUploadTargets(config, "xhs")).toEqual([
+    { platform: "xhs", env: "dev" },
+    { platform: "xhs", env: "prod" },
+  ]);
+  expect(resolveUploadTargets(config, "xhs", "prod")).toEqual([{ platform: "xhs", env: "prod" }]);
+  expect(resolveUploadTargets(config, "xhs", "missing")).toEqual([]);
+});
+
 test("includes Alipay in all-target uploads and filters its environments", () => {
   const config = defineConfig({
     platforms: {

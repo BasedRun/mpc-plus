@@ -2,6 +2,7 @@ import { createMPC } from "@mpc-plus/core";
 import { wechatPlatform } from "@mpc-plus/wechat";
 import { douyinPlatform } from "@mpc-plus/douyin";
 import { alipayPlatform } from "@mpc-plus/alipay";
+import { xhsPlatform } from "@mpc-plus/xhs";
 import type { MPC } from "@mpc-plus/core";
 import type { MPCConfig, StandardPlatformsConfig } from "./config.ts";
 import type { ProjectConfig, ReleaseConfig } from "@mpc-plus/core";
@@ -20,6 +21,7 @@ export function createStandardMPC(): MPC {
   mpc.register(wechatPlatform);
   mpc.register(douyinPlatform);
   mpc.register(alipayPlatform);
+  mpc.register(xhsPlatform);
   return mpc;
 }
 
