@@ -48,12 +48,12 @@ export default defineConfig({
 
 ## 全局配置
 
-| 字段                  | 类型     | 说明                             |
-| --------------------- | -------- | -------------------------------- |
-| `project.root`        | `string` | 小程序构建产物目录，上传时必填。 |
-| `release.version`     | `string` | 上传版本号，上传时必填。         |
-| `release.description` | `string` | 版本说明，可选。                 |
-| `platforms`           | `object` | 平台配置集合。                   |
+| 字段                  | 类型     | 说明                                         |
+| --------------------- | -------- | -------------------------------------------- |
+| `project.root`        | `string` | 小程序构建产物目录，上传时必填。             |
+| `release.version`     | `string` | 上传版本号，微信必填，抖音可省略并自动递增。 |
+| `release.description` | `string` | 版本说明，微信可选，抖音必填。               |
+| `platforms`           | `object` | 平台配置集合。                               |
 
 ## 环境配置
 
@@ -145,5 +145,15 @@ export default defineConfig({
 项目目录、版本号、版本说明统一通过 `project` 和 `release` 配置。
 `channel` 是抖音测试通道，与 MPC 的 `env` 环境标识相互独立。
 
-当前已支持抖音配置类型、环境解析及目标筛选，Token 认证和实际上传尚未接入。
-同时配置微信和抖音时，执行微信上传请显式指定 `--platform wechat`。
+抖音上传通过 `tt-ide-cli` 的 Node.js API 执行：先调用 `setAppConfig` 配置 Token，再调用 `upload` 上传。官方工具会将 Token 写入本机的 CLI 配置文件。
+
+- `project.root` 必填，指向已构建的抖音小程序目录，其中 `project.config.json` 的 `appid` 必须与此处配置一致。
+- `release.description` 必填，作为官方工具的 `changeLog`。
+- `release.version` 可选；填写时须为 `x.y.z` 数字格式，省略时由官方工具自动递增。
+- 上传不会自动复制预览链接到剪贴板，也不会输出二维码文件。
+
+```bash
+pnpm exec mpc upload --platform douyin --env prod
+```
+
+省略 `--platform` 时，会按配置依次上传微信、抖音等全部目标。

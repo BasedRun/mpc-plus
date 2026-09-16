@@ -1,5 +1,33 @@
-import { expect, expectTypeOf, test } from "vite-plus/test";
-import { defineConfig, resolvePlatformConfig, type MPCConfig } from "../src/index.ts";
+import { expect, expectTypeOf, test, vi } from "vite-plus/test";
+import { douyinPlatform } from "@mpc-plus/douyin";
+import {
+  createStandardMPC,
+  defineConfig,
+  resolvePlatformConfig,
+  type MPCConfig,
+} from "../src/index.ts";
+
+test("registers Douyin and dispatches resolved configuration to its uploader", async () => {
+  const mpc = createStandardMPC();
+  const config = resolvePlatformConfig(
+    {
+      project: { root: "/dist/douyin" },
+      release: { version: "1.2.3", description: "Release" },
+      platforms: { douyin: [{ env: "prod", appid: "tt-prod", token: "prod-token" }] },
+    },
+    "douyin",
+    "prod",
+  );
+  const upload = vi.spyOn(douyinPlatform, "upload").mockResolvedValue("uploaded");
+  try {
+    expect(mpc.hasPlatform("wechat")).toBe(true);
+    expect(mpc.hasPlatform("douyin")).toBe(true);
+    expect(await mpc.upload("douyin", config)).toBe("uploaded");
+    expect(upload).toHaveBeenCalledExactlyOnceWith(config);
+  } finally {
+    upload.mockRestore();
+  }
+});
 
 test("defineConfig preserves the standard configuration", () => {
   const config = defineConfig({

@@ -4,7 +4,7 @@
 
 A unified CLI for uploading mini programs across platforms and environments, with shared configuration for build output, release information, and platform credentials.
 
-WeChat mini program uploads are currently implemented. The Douyin package provides configuration types but is not yet connected to the upload workflow.
+WeChat and Douyin mini program uploads are supported. Douyin uploads use `tt-ide-cli` with token authentication.
 
 ## Features
 

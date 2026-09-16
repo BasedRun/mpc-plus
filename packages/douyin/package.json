@@ -36,6 +36,7 @@
     "prepublishOnly": "vp run build"
   },
   "dependencies": {
+    "consola": "^3.4.2",
     "tt-ide-cli": "^0.1.33"
   },
   "devDependencies": {
