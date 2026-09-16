@@ -1,1 +1,1 @@
-export type { DouyinConfigInput, DouyinUploadOptions } from "./config.ts";
+export type { DouyinConfig, DouyinUploadOptions, DouyinUploadResult } from "./config.ts";

@@ -111,3 +111,39 @@ WECHAT_PRIVATE_KEY_PATH=./private.prod.key
   `appid` 和 `privateKeyPath` 建议从环境变量读取。`privateKeyPath`
   是微信上传私钥文件路径，不应把私钥内容写入仓库。
 </Callout>
+
+## 抖音平台配置
+
+抖音与微信共用 `ProjectConfig` 和 `ReleaseConfig`，同样通过环境数组声明配置。
+环境内的 `project`、`release` 按字段覆盖全局配置，未设置的字段继承全局值。
+
+```ts
+export default defineConfig({
+  release: {
+    version: "1.0.0",
+    description: "优化首页体验",
+  },
+  platforms: {
+    douyin: [
+      {
+        env: "prod",
+        appid: process.env.DOUYIN_APPID ?? "",
+        token: process.env.DOUYIN_TOKEN ?? "",
+        project: { root: "./dist/build/mp-toutiao" },
+        upload: {
+          channel: "1",
+          needUploadSourcemap: true,
+        },
+      },
+    ],
+  },
+});
+```
+
+`appid` 和 `token` 为必填配置，Token 应通过环境变量提供，不要提交到仓库。
+`upload` 可选，目前开放官方 SDK 的 `channel` 和 `needUploadSourcemap` 参数；
+项目目录、版本号、版本说明统一通过 `project` 和 `release` 配置。
+`channel` 是抖音测试通道，与 MPC 的 `env` 环境标识相互独立。
+
+当前已支持抖音配置类型、环境解析及目标筛选，Token 认证和实际上传尚未接入。
+同时配置微信和抖音时，执行微信上传请显式指定 `--platform wechat`。

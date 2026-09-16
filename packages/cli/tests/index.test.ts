@@ -96,3 +96,33 @@ test("resolves every configured environment when filters are omitted", () => {
     { platform: "wechat", env: "prod" },
   ]);
 });
+
+test("filters Douyin targets independently of WeChat environments", () => {
+  const config = defineConfig({
+    platforms: {
+      wechat: [{ env: "prod", appid: "wx-prod", privateKeyPath: "/keys/wechat" }],
+      douyin: [
+        { env: "dev", appid: "tt-dev", token: "dev-token" },
+        { env: "prod", appid: "tt-prod", token: "prod-token" },
+      ],
+    },
+  });
+
+  expect(resolveUploadTargets(config)).toEqual([
+    { platform: "wechat", env: "prod" },
+    { platform: "douyin", env: "dev" },
+    { platform: "douyin", env: "prod" },
+  ]);
+  expect(resolveUploadTargets(config, "douyin")).toEqual([
+    { platform: "douyin", env: "dev" },
+    { platform: "douyin", env: "prod" },
+  ]);
+  expect(resolveUploadTargets(config, "douyin", "prod")).toEqual([
+    { platform: "douyin", env: "prod" },
+  ]);
+  expect(resolveUploadTargets(config, undefined, "prod")).toEqual([
+    { platform: "wechat", env: "prod" },
+    { platform: "douyin", env: "prod" },
+  ]);
+  expect(resolveUploadTargets(config, "douyin", "missing")).toEqual([]);
+});
