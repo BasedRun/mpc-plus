@@ -1,7 +1,7 @@
 {
-  "name": "@mpc-plus/standard",
+  "name": "@mpc-plus/alipay",
   "version": "0.0.1-alpha.2",
-  "description": "Standard configuration and platform orchestration for MPC Plus.",
+  "description": "Alipay Mini Program upload support for MPC Plus.",
   "homepage": "https://github.com/pkc918/mpc-plus#readme",
   "bugs": {
     "url": "https://github.com/pkc918/mpc-plus/issues"
@@ -15,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pkc918/mpc-plus.git",
-    "directory": "packages/standard"
+    "directory": "packages/alipay"
   },
   "files": [
     "dist"
@@ -36,12 +36,11 @@
     "prepublishOnly": "vp run build"
   },
   "dependencies": {
-    "@mpc-plus/alipay": "*",
-    "@mpc-plus/core": "*",
-    "@mpc-plus/douyin": "*",
-    "@mpc-plus/wechat": "*"
+    "consola": "^3.4.2",
+    "minidev": "^2.2.5"
   },
   "devDependencies": {
+    "@mpc-plus/core": "*",
     "@types/node": "^26.1.1",
     "bumpp": "^11.1.0",
     "typescript": "^7.0.2",

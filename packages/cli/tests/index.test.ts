@@ -18,6 +18,33 @@ test("makes the environment argument optional", () => {
   });
 });
 
+test("includes Alipay in all-target uploads and filters its environments", () => {
+  const config = defineConfig({
+    platforms: {
+      wechat: [{ env: "prod", appid: "wx-prod", privateKeyPath: "/keys/wechat" }],
+      douyin: [{ env: "prod", appid: "tt-prod", token: "token" }],
+      alipay: [
+        { env: "dev", appid: "ali-dev", identityKeyPath: "/keys/dev" },
+        { env: "prod", appid: "ali-prod", identityKeyPath: "/keys/prod" },
+      ],
+    },
+  });
+  expect(resolveUploadTargets(config)).toEqual([
+    { platform: "wechat", env: "prod" },
+    { platform: "douyin", env: "prod" },
+    { platform: "alipay", env: "dev" },
+    { platform: "alipay", env: "prod" },
+  ]);
+  expect(resolveUploadTargets(config, "alipay")).toEqual([
+    { platform: "alipay", env: "dev" },
+    { platform: "alipay", env: "prod" },
+  ]);
+  expect(resolveUploadTargets(config, "alipay", "prod")).toEqual([
+    { platform: "alipay", env: "prod" },
+  ]);
+  expect(resolveUploadTargets(config, "alipay", "missing")).toEqual([]);
+});
+
 test("loads Vite env files before evaluating the config", async () => {
   const cwd = await mkdtemp(join(tmpdir(), "mpc-plus-env-"));
   const appidName = "MPC_PLUS_TEST_WX_APPID";
