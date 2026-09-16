@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
@@ -36,12 +38,19 @@ jobs:
         run: npm exec -- vp run -r build
 
       - name: Test packages
-        run: npm exec -- vp run -r test
+        run: npm exec -- vp test
 
       - name: Publish packages
         run: npm run publish:packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Upload release changelog
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-changelog
+          path: dist/release/*.md
+          if-no-files-found: error
 
   release:
     name: Create GitHub Release
@@ -52,6 +61,12 @@ jobs:
       contents: write
 
     steps:
+      - name: Download release changelog
+        uses: actions/download-artifact@v8
+        with:
+          name: release-changelog
+          path: release
+
       - name: Create release from the published tag
         env:
           GH_TOKEN: ${{ github.token }}
@@ -64,10 +79,10 @@ jobs:
             exit 0
           fi
 
-          args=(--verify-tag --generate-notes --title "$RELEASE_TAG")
+          args=(--verify-tag --notes-file release/RELEASE_NOTES.md --title "$RELEASE_TAG")
           version="${RELEASE_TAG%%+*}"
           if [[ "$version" == *-* ]]; then
             args+=(--prerelease --latest=false)
           fi
 
-          gh release create "$RELEASE_TAG" "${args[@]}"
+          gh release create "$RELEASE_TAG" release/CHANGELOG.md "${args[@]}"

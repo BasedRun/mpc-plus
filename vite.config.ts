@@ -9,5 +9,12 @@ export default defineConfig({
   },
   run: {
     cache: true,
+    tasks: {
+      changelog: {
+        command:
+          "conventional-changelog -p conventionalcommits -t v -r 0 -o CHANGELOG.md && vp fmt CHANGELOG.md",
+        cache: false,
+      },
+    },
   },
 });

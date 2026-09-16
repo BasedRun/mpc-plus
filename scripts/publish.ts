@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -49,6 +49,16 @@ if (versions.size !== 1) {
 }
 
 const [version] = versions;
+const rootManifest = JSON.parse(
+  readFileSync(resolve(rootDirectory, "package.json"), "utf8"),
+) as PackageManifest;
+
+if (rootManifest.version !== version) {
+  throw new Error(
+    `Root package version ${rootManifest.version} does not match published package version ${version}`,
+  );
+}
+
 const releaseTag = process.env.GITHUB_REF_NAME;
 
 if (releaseTag && releaseTag !== `v${version}`) {
@@ -62,6 +72,39 @@ const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const npmRegistry = "https://registry.npmjs.org";
 
 console.log(`[publish] version=${version}, npmTag=${npmTag}, dryRun=${dryRun}`);
+
+function runNpm(args: string[]) {
+  const result = spawnSync(npmCommand, args, {
+    cwd: rootDirectory,
+    env: process.env,
+    stdio: "inherit",
+  });
+
+  if (result.error) {
+    throw result.error;
+  }
+
+  if (result.status !== 0) {
+    process.exit(result.status ?? 1);
+  }
+}
+
+console.log("[publish] generating changelog and release notes");
+runNpm(["exec", "--", "vp", "run", "changelog"]);
+
+const changelog = readFileSync(resolve(rootDirectory, "CHANGELOG.md"), "utf8");
+const releaseNotes = changelog
+  .split(/\n(?=## )/)
+  .find((section) => section.trimStart().startsWith(`## [${version}](`));
+
+if (!releaseNotes) {
+  throw new Error(`CHANGELOG.md does not contain release notes for ${version}`);
+}
+
+const releaseDirectory = resolve(rootDirectory, "dist/release");
+mkdirSync(releaseDirectory, { recursive: true });
+writeFileSync(resolve(releaseDirectory, "CHANGELOG.md"), changelog);
+writeFileSync(resolve(releaseDirectory, "RELEASE_NOTES.md"), `${releaseNotes.trim()}\n`);
 
 for (const { packageDirectory, manifest } of manifests) {
   console.log(`[publish] ${dryRun ? "checking" : "publishing"} ${manifest.name}@${version}`);
@@ -81,19 +124,7 @@ for (const { packageDirectory, manifest } of manifests) {
     publishArguments.push("--dry-run");
   }
 
-  const result = spawnSync(npmCommand, publishArguments, {
-    cwd: rootDirectory,
-    env: process.env,
-    stdio: "inherit",
-  });
-
-  if (result.error) {
-    throw result.error;
-  }
-
-  if (result.status !== 0) {
-    process.exit(result.status ?? 1);
-  }
+  runNpm(publishArguments);
 }
 
 console.log(`[publish] ${dryRun ? "dry run complete" : "publish complete"}`);

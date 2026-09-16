@@ -65,3 +65,26 @@ npm exec -- mpc upload --platform wechat --env prod
 ```
 
 Omitting both `--platform` and `--env` uploads all configured platforms and environments in sequence. Pass `--env` explicitly to load environment-specific files such as `.env.prod`.
+
+## Changelog
+
+The project uses the Conventional Commits preset from [conventional-changelog](https://github.com/conventional-changelog/conventional-changelog) to generate a shared [CHANGELOG.md](./CHANGELOG.md) from Git commits and version tags prefixed with `v`, including prereleases such as alpha versions.
+
+```bash
+vp install
+vp run changelog
+```
+
+The command rebuilds and formats the entire changelog without duplicating releases on repeated runs. It includes `feat`, `fix`, `perf`, and breaking changes (`!` or `BREAKING CHANGE:`); ordinary `docs`, `chore`, and similar commits are hidden by default. Do not edit the generated file manually.
+
+The `publish:packages` script automatically generates and writes `CHANGELOG.md` before uploading to npm. It also saves the full changelog and current version's release notes to `dist/release/CHANGELOG.md` and `dist/release/RELEASE_NOTES.md`. Publishing stops if generation fails, the root and published package versions differ, or the changelog lacks the current version.
+
+Preview a release locally with the following command. It updates the changelog and checks the npm packages without uploading them:
+
+```bash
+vp run --no-cache publish:packages --dry-run
+```
+
+For a new release, commit features and fixes first, update the root, workspace, and lockfile versions together, then run the preview command above. Commit the version changes and changelog before creating and pushing the matching `v<version>` tag. You can also run `vp run changelog` independently. When the root version still matches the latest tag, only released versions are regenerated.
+
+The tag publishing workflow fetches the full Git history and tags, generates the changelog, uses the current version's notes as the GitHub Release body, and attaches the complete `CHANGELOG.md`. CI-generated files are saved as an Actions artifact and in the Release, without committing back to a Git branch. Update the repository's changelog in the version commit before releasing.
