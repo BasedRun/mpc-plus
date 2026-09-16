@@ -48,12 +48,12 @@ export default defineConfig({
 
 ## 全局配置
 
-| 字段                  | 类型     | 说明                                                 |
-| --------------------- | -------- | ---------------------------------------------------- |
-| `project.root`        | `string` | 小程序构建产物目录，上传时必填。                     |
-| `release.version`     | `string` | 上传版本号，微信必填，抖音和支付宝可省略并自动递增。 |
-| `release.description` | `string` | 版本说明，微信和支付宝可选，抖音必填。               |
-| `platforms`           | `object` | 平台配置集合。                                       |
+| 字段                  | 类型     | 说明                                                         |
+| --------------------- | -------- | ------------------------------------------------------------ |
+| `project.root`        | `string` | 小程序构建产物目录，上传时必填。                             |
+| `release.version`     | `string` | 上传版本号，微信和小红书必填，抖音和支付宝可省略并自动递增。 |
+| `release.description` | `string` | 版本说明，微信和支付宝可选，抖音和小红书必填。               |
+| `platforms`           | `object` | 平台配置集合。                                               |
 
 ## 环境配置
 
@@ -186,3 +186,27 @@ export default defineConfig({
 `release.description` 可选，映射为官方 SDK 的 `versionDescription`。`upload.experience` 默认 `false`，设为 `true` 时上传后自动设置为体验版，需要相应平台权限。
 
 参见[支付宝平台](/docs/alipay)获取完整步骤。
+
+## 小红书平台配置
+
+```ts
+export default defineConfig({
+  release: { version: "1.0.0", description: "优化首页体验" },
+  platforms: {
+    xhs: [
+      {
+        env: "prod",
+        appid: process.env.XHS_APPID ?? "",
+        token: process.env.XHS_TOKEN ?? "",
+        project: { root: "./dist/build/mp-xhs" },
+      },
+    ],
+  },
+});
+```
+
+`appid`、`token`、解析后的 `project.root`、`release.version` 和 `release.description` 均为必填，且不能只包含空白字符。版本号跟随官方 SDK，仅校验非空，原样上传；不提供自动递增或额外的 `x.y.z` 格式限制。
+
+SDK 从 `project.config.json` 读取目标 AppID，该文件的 `appid` 必须与这里配置一致。Token 使用小红书控制台生成的代码上传密钥。
+
+上传仅使用 Token 认证。MPC 禁止 SDK 回退到扫码登录，以便在 CI 中运行。参见[小红书平台](/docs/xhs)。
