@@ -19,6 +19,7 @@ const rootDirectory = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const releasePackages = [
   "packages/core",
   "packages/douyin",
+  "packages/alipay",
   "packages/wechat",
   "packages/standard",
   "packages/cli",

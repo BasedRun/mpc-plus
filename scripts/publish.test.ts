@@ -45,7 +45,12 @@ afterEach(() => {
 test("generates changelog before publishing and writes only the current version to release notes", async () => {
   await import("./publish.ts");
 
-  expect(mocks.spawnSync).toHaveBeenCalledTimes(6);
+  expect(mocks.spawnSync).toHaveBeenCalledTimes(7);
+  expect(mocks.spawnSync).toHaveBeenCalledWith(
+    expect.any(String),
+    expect.arrayContaining(["publish", resolve(rootDirectory, "packages/alipay")]),
+    expect.any(Object),
+  );
   expect(mocks.spawnSync).toHaveBeenNthCalledWith(
     1,
     expect.any(String),
