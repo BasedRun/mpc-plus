@@ -20,6 +20,7 @@ const releasePackages = [
   "packages/core",
   "packages/douyin",
   "packages/alipay",
+  "packages/xhs",
   "packages/wechat",
   "packages/standard",
   "packages/cli",
