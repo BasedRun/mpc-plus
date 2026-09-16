@@ -1,0 +1,64 @@
+---
+title: 支付宝平台
+description: 使用身份密钥和可选版本号上传支付宝小程序。
+---
+
+## 准备工作
+
+支付宝上传基于官方 `minidev` 的 Node.js API，CLI 已包含该依赖。
+
+- 准备支付宝小程序 AppID。
+- 从支付宝开放平台下载身份密钥文件，保存在本机或 CI 可访问的位置。
+- 先生成支付宝小程序构建产物，将 `project.root` 指向该目录。
+
+MPC 要求显式填写 `identityKeyPath`，不会使用本机快速授权作为后备方式。
+
+## 配置和上传
+
+在 `.env.prod` 中设置：
+
+```dotenv
+ALIPAY_APPID=2026000000000000
+ALIPAY_IDENTITY_KEY_PATH=/absolute/path/to/identity.json
+```
+
+在 `mpc.config.ts` 中配置：
+
+```ts
+import { defineConfig } from "@mpc-plus/cli";
+
+export default defineConfig({
+  platforms: {
+    alipay: [
+      {
+        env: "prod",
+        appid: process.env.ALIPAY_APPID ?? "",
+        identityKeyPath: process.env.ALIPAY_IDENTITY_KEY_PATH ?? "",
+        project: { root: "./dist/build/mp-alipay" },
+        release: { description: "优化首页体验" },
+        upload: { experience: false },
+      },
+    ],
+  },
+});
+```
+
+```bash
+npm exec -- mpc upload --platform alipay --env prod
+```
+
+路径相对于执行命令的工作目录解析，也可以使用绝对路径。身份密钥文件不要提交到仓库。
+
+## 版本与体验版
+
+`release.version` 非必填。省略时，不向 SDK 传入版本号，由支付宝查询最新已上传版本并递增 patch 号，例如 `1.2.3` → `1.2.4`。
+
+指定版本时，使用 `release: { version: "1.2.3" }`。版本必须为三段数字，空字符串和预发布后缀均不接受。全局 `release.version` 会被环境继承；需要为支付宝单独启用自动递增时，设置 `release: { version: undefined }`。
+
+`release.description` 可选，对应 SDK 的 `versionDescription`。
+
+`upload.experience` 默认 `false`。设为 `true` 时，SDK 会在上传后设置体验版，并在返回值中包含 `experienceQrCodeUrl`。需要相应平台权限；该功能不包含提审或正式发布。
+
+本平台固定使用 `clientType: "alipay"`。上传失败会以非零退出码反馈，其他配置目标仍会继续执行。
+
+官方说明：[upload 上传项目](https://opendocs.alipay.com/mini/02q3an?pathHash=12060a6b)。

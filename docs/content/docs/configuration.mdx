@@ -48,12 +48,12 @@ export default defineConfig({
 
 ## 全局配置
 
-| 字段                  | 类型     | 说明                                         |
-| --------------------- | -------- | -------------------------------------------- |
-| `project.root`        | `string` | 小程序构建产物目录，上传时必填。             |
-| `release.version`     | `string` | 上传版本号，微信必填，抖音可省略并自动递增。 |
-| `release.description` | `string` | 版本说明，微信可选，抖音必填。               |
-| `platforms`           | `object` | 平台配置集合。                               |
+| 字段                  | 类型     | 说明                                                 |
+| --------------------- | -------- | ---------------------------------------------------- |
+| `project.root`        | `string` | 小程序构建产物目录，上传时必填。                     |
+| `release.version`     | `string` | 上传版本号，微信必填，抖音和支付宝可省略并自动递增。 |
+| `release.description` | `string` | 版本说明，微信和支付宝可选，抖音必填。               |
+| `platforms`           | `object` | 平台配置集合。                                       |
 
 ## 环境配置
 
@@ -157,3 +157,32 @@ pnpm exec mpc upload --platform douyin --env prod
 ```
 
 省略 `--platform` 时，会按配置依次上传微信、抖音等全部目标。
+
+## 支付宝平台配置
+
+支付宝通过 `minidev` 上传，支持与其他平台相同的多环境配置及全局字段继承。
+
+```ts
+export default defineConfig({
+  platforms: {
+    alipay: [
+      {
+        env: "prod",
+        appid: process.env.ALIPAY_APPID ?? "",
+        identityKeyPath: process.env.ALIPAY_IDENTITY_KEY_PATH ?? "",
+        project: { root: "./dist/build/mp-alipay" },
+        release: { description: "优化首页体验" },
+        upload: { experience: false },
+      },
+    ],
+  },
+});
+```
+
+`appid`、`identityKeyPath` 和解析后的 `project.root` 必填。身份密钥使用从支付宝开放平台下载的文件，未配置时不会回退到本机快速授权。
+
+`release.version` 可选，填写时必须为数字 `x.y.z` 格式；不传时由支付宝自动递增最新已上传版本的 patch 号。环境未指定版本时会继承全局版本；若全局已配置版本但希望支付宝自动递增，在支付宝环境中显式设置 `release: { version: undefined }`。
+
+`release.description` 可选，映射为官方 SDK 的 `versionDescription`。`upload.experience` 默认 `false`，设为 `true` 时上传后自动设置为体验版，需要相应平台权限。
+
+参见[支付宝平台](/docs/alipay)获取完整步骤。

@@ -4,7 +4,7 @@
 
 A unified CLI for uploading mini programs across platforms and environments, with shared configuration for build output, release information, and platform credentials.
 
-WeChat and Douyin mini program uploads are supported. Douyin uploads use `tt-ide-cli` with token authentication.
+WeChat, Douyin, and Alipay mini program uploads are supported. Douyin uses `tt-ide-cli`; Alipay uses `minidev` with an identity key file and an optional version.
 
 ## Features
 
