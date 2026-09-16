@@ -1,6 +1,6 @@
 {
   "name": "@mpc-plus/cli",
-  "version": "0.0.1-alpha.2",
+  "version": "0.0.1-alpha.3",
   "description": "Command-line interface for uploading mini-program builds with MPC Plus.",
   "homepage": "https://github.com/pkc918/mpc-plus#readme",
   "bugs": {
